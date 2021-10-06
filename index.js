@@ -13,7 +13,7 @@ const validateLogin = require('./src/middlewares/validateLogin');
 
 //Import the routes
 const register = require('./src/routes/register.route');
-//const login = require('./src/routes/login.route')
+const login = require('./src/routes/login.route')
 
 
 const port = config.port;
@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 // Paths
 app.use('/DelilahResto/account', validateRegister, register);
-//app.use('DelilahResto/account', validateLogin, login);
+app.use('DelilahResto/account', validateLogin, login);
 
 
 app.listen(port, () => {

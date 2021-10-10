@@ -6,7 +6,8 @@ const config = {
     password: process.env.PASSWROD || "",
     dbname: process.env.DBNAME,
     tokenSecret: process.env.TOKEN_SECRET,
-    adminCode: process.env.ADMIN_CODE
+    adminCode: process.env.ADMIN_CODE,
+    portDatabase: process.env.PORT_DATABASE
 }
 
 module.exports = config;

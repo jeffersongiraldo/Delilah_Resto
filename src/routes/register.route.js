@@ -10,13 +10,11 @@ const connection = require('../database/connection');
 
 // Register
 const register = router.post('/register', async(req, res) => {
-    console.log(req.body.adminCode)
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(req.body.password, salt)
-    const adminCode = (req.body.adminCode ==  undefined || req.body.adminCode == null || req.body.adminCode == "") 
-                        ? null
-                        : await bcrypt.hash(req.body.adminCode, salt)
-    
+    const adminCode = (req.body.adminCode !==  undefined) 
+                        ? await bcrypt.hash(req.body.adminCode, salt)
+                        : null
 
     const userData = {
         user_id: req.body.user_id,
@@ -34,7 +32,12 @@ const register = router.post('/register', async(req, res) => {
         const savedUser = await userModel.create(userData);
         res.json({
             error: null,
-            data: savedUser
+            data: {
+                username: savedUser.username,
+                email: savedUser.email,
+                cellphone: savedUser.cellphone,
+                delivery_address: savedUser.delivery_address
+            }
         })
     } catch (err) {
         res.status(400).json({error: err})

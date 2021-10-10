@@ -5,8 +5,8 @@ const userModel = require('../models/user.model');
 
 //Schema Login
 const schemaLogin = Joi.object({
-    username: Joi.string().min(6).max(99).required(),
-    password: Joi.string().min(8).max(1024).required()
+    username: Joi.string().min(6).max(99),
+    password: Joi.string().min(8).max(1024)
 })
 
 const validateLogin = async (req, res, next) => {
@@ -21,12 +21,17 @@ const validateLogin = async (req, res, next) => {
     const userFound = await userModel.findOne({
         where: {username: userCredentials.username}
     })
-    if (userFound.username !== userCredentials.username) return res.status(400).json({error: true, msg: "Invalid Credentials "});
+    
+    async function validation(userFound) {
+        if (!userFound || userFound == null) return res.status(400).json({error: true, msg: "Invalid Credentials "});
+    
+        //Validacion de contraseña
+        const validPassword = await bcrypt.compare(userCredentials.password, userFound.password);
+        if (!validPassword) return res.status(400).json({error: error, msg: "Invalid Credentials"});
+        next();
+    }
 
-    //Validacion de contraseña
-    const validPassword = await bcrypt.compare(userCredentials.password, userFound.password);
-    if (!validPassword) return res.status(400).json({error: error, msg: "Invalid Credentials"});
-    next();
+    validation(userFound);
 }
 
 module.exports = validateLogin;

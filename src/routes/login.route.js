@@ -16,7 +16,7 @@ const login = router.post('/login', async(req, res) => {
     })
 
     //Creacion del Token
-    const token = await jwt.sign({
+    const token = jwt.sign({
         username: userFound.username,
         user_id: userFound.user_id,
         isAdmin: userFound.isAdmin,

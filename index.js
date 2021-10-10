@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 // Paths
 app.use('/DelilahResto/account', validateRegister, register);
-app.use('DelilahResto/account', validateLogin, login);
+app.use('/DelilahResto/account', validateLogin, login);
 
 
 app.listen(port, () => {

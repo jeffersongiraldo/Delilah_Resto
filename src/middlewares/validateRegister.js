@@ -1,15 +1,15 @@
-
 const userModel = require('../models/user.model');
+const Joi = require('@hapi/joi');
 
 // Schema register
 const schemaRegister = Joi.object({
     user_id: Joi.number(),
-    username: Joi.string().min(6).max(99).required(),
+    username: Joi.string().min(6).max(99),
     fullname: Joi.string().min(6).max(250),
     email: Joi.string().min(10).max(255).email(),
     cellphone: Joi.string(),
     delivery_address: Joi.string().min(6).max(255),
-    password: Joi.string().min(8).max(1024).required(),
+    password: Joi.string().min(8).max(1024),
     isAdmin: Joi.string().min(4).max(5),
     adminCode: Joi.string().min(4).max(250),
     isDisable: Joi.string().min(4).max(5)

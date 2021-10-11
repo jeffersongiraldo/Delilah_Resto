@@ -15,8 +15,9 @@ const authAdmin = require('./src/middlewares/authAdmin');
 
 //Import the routes
 const register = require('./src/routes/register.route');
-const login = require('./src/routes/login.route')
-const newOrder = require('./src/routes/order.route')
+const login = require('./src/routes/login.route');
+const newOrder = require('./src/routes/order.route');
+const productsRoute = require('./src/routes/products.route');
 
 const port = config.port;
 
@@ -27,6 +28,7 @@ app.use(bodyParser.json());
 app.use('/DelilahResto/account', validateRegister, register);
 app.use('/DelilahResto/account', validateLogin, login);
 app.use('/DelilahResto/account', authToken,newOrder);
+app.use('/DelilahResto', authToken, productsRoute);
 
 app.listen(port, () => {
     console.log(`Server is running in http://localhost:${port}`)

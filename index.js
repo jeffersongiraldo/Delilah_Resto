@@ -3,9 +3,14 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-
 // Import doc config.js
 const config = require('./src/config/config');
+
+const port = config.port;
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
 
 // Import middlewares and validations
 const validateRegister = require('./src/middlewares/validateRegister');
@@ -20,16 +25,11 @@ const newOrder = require('./src/routes/order.route');
 const productsRoute = require('./src/routes/products.route');
 const  getInfo = require('./src/routes/account.route');
 
-const port = config.port;
-
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-
 // Paths
 app.use('/DelilahResto/account', validateRegister, register);
 app.use('/DelilahResto/account', validateLogin, login);
 app.use('/DelilahResto/account', authToken, getInfo);
-app.use('/DelilahResto/account', authToken,newOrder);
+app.use('/DelilahResto', authToken, newOrder);
 app.use('/DelilahResto', authToken, productsRoute);
 
 app.listen(port, () => {

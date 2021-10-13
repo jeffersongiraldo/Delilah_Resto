@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const jwt_decode = require('jwt-decode');
-const createOrder = require('../controllers/orderFunctions');
+const createOrder = require('../utils/order.functions');
 
 const newOrder = router.post('/newOrder', async(req, res) => {
     const order = req.body;

@@ -21,14 +21,14 @@ const authAdmin = require('./src/middlewares/authAdmin');
 //Import the routes
 const register = require('./src/routes/register.route');
 const login = require('./src/routes/login.route');
+const account = require('./src/routes/account.route')
 const newOrder = require('./src/routes/order.route');
 const productsRoute = require('./src/routes/products.route');
-const  getInfo = require('./src/routes/account.route');
 
 // Paths
 app.use('/DelilahResto/account', validateRegister, register);
 app.use('/DelilahResto/account', validateLogin, login);
-app.use('/DelilahResto/account', authToken, getInfo);
+app.use('/DelilahResto', authToken, account);
 app.use('/DelilahResto', authToken, newOrder);
 app.use('/DelilahResto', authToken, productsRoute);
 

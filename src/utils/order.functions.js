@@ -1,7 +1,7 @@
 const momentLibrary = require('moment');
 const moment = momentLibrary();
 const productModel = require('../models/product.model');
-const orderDetailModel = require('../models/order_detail.model');
+const orderDetailModel = require('../models/orderDetail.model');
 const orderModel = require('../models/order.model');
 const billModel = require('../models/bill.model');
 
@@ -13,7 +13,6 @@ const getPriceProducts = async (array) => {
         let productWithPrice = {...array[i], price: price}
         newArray.push(productWithPrice)
     };
-    console.log(`This is the First Aarray with prices: ${newArray[1]}`)
     if(newArray.length == array.length) {
         return newArray
     } else {
@@ -37,7 +36,6 @@ const insertOrderDetail = async (orderId, array) => {
         return created;
     })
     const insertDetail = await orderDetailModel.bulkCreate(register);
-    console.log(`THIS IS THE DETAILS: ${register}`)
     return(register);
 }
 
@@ -50,7 +48,6 @@ const createBill = async (order) => {
         user_id: order.user_id 
     }
     const billCreated = await billModel.create(newBill)
-    console.log(`This is the BILL ID of NewBill ${billCreated.bill_id}`)
     return billCreated;
 }
 
@@ -107,3 +104,5 @@ const createOrder = async (newOrder, user_id) => {
     }
      
 }
+
+module.exports = createOrder;

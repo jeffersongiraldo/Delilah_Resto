@@ -9,7 +9,7 @@ const connection = require('../database/connection');
 
 
 // Register
-const register = router.post('/register', async(req, res) => {
+const register = router.post('/', async(req, res) => {
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(req.body.password, salt)
     const adminCode = (req.body.adminCode !==  undefined) 

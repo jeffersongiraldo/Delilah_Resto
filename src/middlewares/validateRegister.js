@@ -1,38 +1,27 @@
 const userModel = require('../models/user.model');
-const Joi = require('@hapi/joi');
 
-// Schema register
-const schemaRegister = Joi.object({
-    user_id: Joi.number(),
-    username: Joi.string().min(6).max(99),
-    fullname: Joi.string().min(6).max(250),
-    email: Joi.string().min(10).max(255).email(),
-    cellphone: Joi.string(),
-    delivery_address: Joi.string().min(6).max(255),
-    password: Joi.string().min(8).max(1024),
-    isAdmin: Joi.string().min(4).max(5),
-    adminCode: Joi.string().min(4).max(250),
-    isDisable: Joi.string().min(4).max(5)
-})
+
+function validateEmail(email) {
+    re = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+    if (re.exec(email))  return true;
+    return false;
+}
 
 const validateRegister = async (req, res, next) => {
-
-    const { error } = schemaRegister.validate(req.body)
-    if (error) {
-        return res.status(400).json(
-        {error: error.details[0].message}
-        )
+    const infoUser = req.body;
+    const emailValidated = validateEmail(infoUser.email)
+    console.log(`This is the emailValidated ${emailValidated}`)
+    console.log('Null + null es igual a ' + null && null)
+    if(!emailValidated) {
+        return res.status(401).json({error: true, msg: `You must put a correct email.`})
+    } else {
+        const emailIsNotUnique = await userModel.findOne({where: {email: infoUser.email}})
+        if(emailIsNotUnique) return res.status(409).json({error: true, msg: `This email have already been registered`});
+        const usernameIsNotUnique = await userModel.findOne({where: {username: infoUser.username}})
+        console.log(`This is the usernameValidation ${usernameIsNotUnique}`)
+        if(usernameIsNotUnique) return res.status(409).json({error: true, msg: `This username have already been registered`});
+        return next()
     }
-    
-    const email = req.body.email;
-    userModel.findOne({email: email})
-    .then(obj => {
-        if(obj.email === email) return res.status(409).json({error: true, msg: `This email already have been registered ${obj.email}`})
-        next();
-    })
-    .catch(err => {
-        return res.json({err: true, msg: 'There is an error with the function ' + err})
-    })
 }
 
 module.exports = validateRegister;

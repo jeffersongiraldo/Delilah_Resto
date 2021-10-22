@@ -11,6 +11,7 @@ const getProducts = router.get('/products', (req, res) => {
 
 const getProductById = router.get('/products/:id', (req, res) => {
     let {id} = req.params;
+    if(isNaN(id)) return res.status(400).json({error: true, msg:'Id should be a number'});
     productModel.findByPk(id)
         .then((product) => {
             if (!product) return res.status(404).json({error: true, msg: `Product identify with id ${product.product_id} Not Found`})

@@ -10,7 +10,7 @@ const connection = require('../database/connection');
 
 
 // Login
-const login = router.post('/login', async(req, res) => {
+const login = router.post('/', async(req, res) => {
     const userFound = await userModel.findOne({
         where: {username: req.body.username}
     })

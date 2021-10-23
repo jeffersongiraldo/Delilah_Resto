@@ -193,4 +193,36 @@ router
             })
     })
 
+    .get('/', async(req, res) => {
+        const numUsersAvailable = await userModel.findAll({where: {isDisable: 'false'}})
+                            .then(result => {
+                                return result.length
+                            })
+                            .catch(err => {
+                                return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
+                            })
+        const numOrders = await orderModel.findAll()
+                            .then(result => {
+                                return result.length
+                            })
+                            .catch(err => {
+                                return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
+                            })
+        const numProductsAvailable = await productModel.findAll({where: {isDisable: 'false'}})
+                                        .then(result => {
+                                            return result.length;
+                                        })
+                                        .catch(err => {
+                                            return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
+                                        })
+
+        const allData = {
+            users: numUsersAvailable,
+            products: numProductsAvailable,
+            orders: numOrders
+        }
+
+        return res.status(202).json({msg: 'This is the data of the users, products and orders until now', info: allData})
+    })
+
 module.exports = router;

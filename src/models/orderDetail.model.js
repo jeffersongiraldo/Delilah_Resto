@@ -4,8 +4,8 @@ const products = require('./product.model');
 const orders = require('./order.model');
 
 const orderDetailModel = connection.define('order_details', {
-    order_detail_id: {
-        field: 'order_detail_id',
+    orderDetail_id: {
+        field: 'orderDetail_id',
         type: sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true

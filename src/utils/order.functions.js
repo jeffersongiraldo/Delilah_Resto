@@ -44,7 +44,7 @@ const createBill = async (order) => {
         date: order.date,
         total: order.total,
         order_id: order.order_id,
-        payment_method: order.payment_method,
+        paymentMethod: order.paymentMethod,
         user_id: order.user_id 
     }
     const billCreated = await billModel.create(newBill)
@@ -56,10 +56,10 @@ const updateBillId = async(order, bill) => {
         order_id: order.order_id,
         date: order.date,
         total: order.total,
-        status_order: order.status_order,
+        statusOrder: order.statusOrder,
         user_id: order.user_id,
         bill_id: bill,
-        payment_method: order.payment_method
+        paymentMethod: order.paymentMethod
     }
     await orderModel.update(item, { where: {order_id: order.order_id}})
 }
@@ -81,7 +81,7 @@ const createOrder = async (newOrder, user_id) => {
             date: orderDate,
             total: totalOrder,
             user_id: parseInt(user_id),
-            payment_method: newOrder.payment_method
+            paymentMethod: newOrder.paymentMethod
         }
         try {
             const orderCreated = await orderModel.create(orderFormat)

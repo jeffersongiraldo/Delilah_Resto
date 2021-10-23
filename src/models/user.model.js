@@ -29,8 +29,8 @@ userModel = connection.define('users', {
         type: sequelize.NUMBER,
         allowNull: false
     },
-    delivery_address: {
-        field: 'delivery_address',
+    deliveryAddress: {
+        field: 'deliveryAddress',
         type: sequelize.STRING,
         allowNull: false
     },

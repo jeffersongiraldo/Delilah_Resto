@@ -11,7 +11,7 @@ router
             where: {user_id: parseInt(tokenDecoded.user_id)}
         })
         .then(userFound => {
-            if(userFound) return res.status(202).json({ msg: "Accepted", user_id: userFound.user_id, username: userFound.username, fullname: userFound.fullname, email: userFound.email, delivery_address: userFound.delivery_address,cellphone: userFound.cellphone})
+            if(userFound) return res.status(202).json({ msg: "Accepted", user_id: userFound.user_id, username: userFound.username, fullname: userFound.fullname, email: userFound.email, deliveryAddress: userFound.deliveryAddress,cellphone: userFound.cellphone})
             res.status(404).json({error: true, msg: "It was not possible to found the info of the user"});
         })
         .catch(err => {

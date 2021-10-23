@@ -19,8 +19,8 @@ const orderModel = connection.define('orders', {
         field: 'total',
         type: sequelize.FLOAT,
     },
-    status_order: {
-        field: 'status_order',
+    statusOrder: {
+        field: 'statusOrder',
         type: sequelize.STRING,
     },
     user_id: {
@@ -31,8 +31,8 @@ const orderModel = connection.define('orders', {
             key: 'user_id'
         }
     },
-    payment_method: {
-        field: 'payment_method',
+    paymentMethod: {
+        field: 'paymentMethod',
         type: sequelize.STRING
     },
     bill_id: {

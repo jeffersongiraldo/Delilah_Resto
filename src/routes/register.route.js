@@ -22,7 +22,7 @@ const register = router.post('/', async(req, res) => {
         fullname: req.body.fullname,
         email: req.body.email,
         cellphone: req.body.cellphone,
-        delivery_address: req.body.delivery_address,
+        deliveryAddress: req.body.deliveryAddress,
         password: password,
         isAdmin: req.body.isAdmin,
         adminCode: adminCode,
@@ -36,7 +36,7 @@ const register = router.post('/', async(req, res) => {
                 username: savedUser.username,
                 email: savedUser.email,
                 cellphone: savedUser.cellphone,
-                delivery_address: savedUser.delivery_address
+                deliveryAddress: savedUser.deliveryAddress
             }
         })
     } catch (err) {

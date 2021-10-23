@@ -109,9 +109,9 @@ router
                 console.log(result)
                 if(result == 1) {
                     const productUpdated = await productModel.findByPk(id);
-                    return res.status(400).json({msg: `The product was updated`, data: productUpdated})
+                    return res.status(202).json({msg: `The product was updated`, data: productUpdated})
                 }
-                return res.status(400).json({error: true, msg: `The product with id ${id} Not Found`})
+                return res.status(400).json({error: true, msg: ` Not Found the product with id ${id}`})
             })
             .catch(err => {
                 res.status(400).json({error: true, msg: `There is an error with the update ${err}`})
@@ -136,8 +136,61 @@ router
             })
     })
 
+
     //Endpoints de la ruta admin/orders
 
+    .get('/orders', (req, res) => {
+        orderModel.findAll()
+            .then(orders => {
+                res.status(202).json({msg: 'Accepted', data: orders})
+            })
+            .catch(err => {
+                res.status(404).json({error: true, msg: `Orders not found ${err}`})
+            })
+    })
 
+    .get('/orders/:id', (req, res) => {
+        let {id} = req.params;
+        if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string or a symbol'})
+
+        orderModel.findByPk(id)
+            .then(order => {
+                if(!order) return res.status(404).json({error: true, msg: `Product with id ${id} not found`})
+                return res.status(202).json({msg: 'Accepted', data: order})
+            })
+            .catch(err => {
+                return res.status(404).json({error: true, msg: `There is an error ${err}`})
+            })
+    })
+
+    .put('/orders/:id', (req, res) => {
+        let {id} = req.params;
+        console.log(req.body.status_order, id)
+        
+        let newStatusOrder = req.body.status_order.toLowerCase();
+        if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
+        if(!req.body.hasOwnProperty('status_order')) return res.status(400).json({error: true, msg: 'It is only possible to update the status of an order'})
+        const statusOrder = ['new', 'confirmed', 'in process', 'sending', 'delivered', 'canceled']
+        console.log(newStatusOrder, statusOrder.includes(newStatusOrder))
+        if(!statusOrder.includes(newStatusOrder)) {
+            return res.status(400).json({error: true, msg: 'You must put a correct status order to update'})
+        } 
+        const statusOrderUpdate = {
+            status_order: newStatusOrder
+        };
+        orderModel.update(statusOrderUpdate, {
+            where: {order_id: id}
+        })
+            .then(async result => {
+                if(result == 1) {
+                    const orderUpdated = await orderModel.findByPk(id);
+                    return res.status(202).json({msg: `The order was updated`, data: orderUpdated})
+                }
+                return res.status(400).json({error: true, msg: `There is an error with the order_id ${id}`})
+            })
+            .catch(err => {
+                return Error({error: true, msg: `There is an error with the update ${err}`})
+            })
+    })
 
 module.exports = router;

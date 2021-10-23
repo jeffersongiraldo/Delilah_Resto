@@ -4,6 +4,9 @@ const productModel = require('../models/product.model');
 const orderModel = require('../models/order.model');
 const billModel = require('../models/bill.model');
 
+//Middleware para el endpoint POST admin/products
+const validateProduct = require('../middlewares/validateProduct');
+
 
 router
     //Endpoints de la ruta admin/users

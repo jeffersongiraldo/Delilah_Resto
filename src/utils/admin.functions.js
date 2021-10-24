@@ -5,7 +5,7 @@ const orderModel = require('../models/order.model');
 module.exports = {
     resumeData: async() => {
 
-        const numUsersAvailable = await userModel.findAll({where: {isDisable: 'false' || 'NULL'}})
+        const numUsersAvailable = await userModel.findAll({where: {isDisable: 'false'}})
                                 .then(result => {
                                     return result.length
                                 })

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const userModel = require('../models/user.model');
 const productModel = require('../models/product.model');
 const orderModel = require('../models/order.model');
-const billModel = require('../models/bill.model');
+const orderDetailModel = require('../models/orderDetail.model');
 
 //Functions of the admin route
 const adminFunctions = require('../utils/admin.functions')
@@ -124,12 +124,36 @@ router
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
         productModel.findByPk(id)
             .then(product => {
-                product.destroy()
-                    .then(() => {
-                        res.status(202).json({msg: `The product with id ${id} has been deleted successfully!`})
+                orderDetailModel.findAll({ where: {product_id: id}})
+                    .then(async result => {
+                        if(result.length > 0) {
+                            disable = {isDisable: "true"}
+                            await productModel.update(disable, {
+                                where: {product_id: id}
+                            })
+                                .then(result => {
+                                    console.log(result)
+                                    if(result == 1) {
+                                        return res.status(202).json({msg: `The product was disable`, data: {product: productUpdated.product_name, disable}})
+                                    }    
+                                    return res.status(400).json({error: true, msg: `Error in disable of the product`})
+                                })
+                                .catch(err => {
+                                    return res.status(400).json({error: true, msg: `There is an error updating of disable ${err}`})
+                                })
+                        }
+                        product.destroy()
+                            .then(() => {
+                                return res.status(202).json({msg: `The product with id ${id} has been deleted successfully!`})
+                            })
+                            .catch(async err => {
+                                return res.status(400).json({error: true, msg: `There was a problem in the process of deleting ${err}`})
+                                
+                            })
+
                     })
                     .catch(err => {
-                        res.status(400).json({error: true, msg: `There was a problem in the process of deleting ${err}`})
+                        res.status(400).json({error: true, msg: `There is a problem searching the order details of product_id ${id} Not Found`})
                     })
             })
             .catch(err => {

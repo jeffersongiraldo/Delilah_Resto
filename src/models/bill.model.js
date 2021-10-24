@@ -29,8 +29,8 @@ const billModel = connection.define('bills', {
             key: 'order_id'
         }
     },
-    payment_method: {
-        field: 'payment_method',
+    paymentMethod: {
+        field: 'paymentMethod',
         type: sequelize.STRING,
         allowNull: false
     },

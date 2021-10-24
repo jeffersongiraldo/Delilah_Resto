@@ -8,8 +8,8 @@ const productModel = connection.define('products', {
         primaryKey: true,
         autoIncrement: true
     },
-    product_name: {
-        field: 'product_name',
+    productName: {
+        field: 'productName',
         type: sequelize.STRING,
         allowNull: false
     },
@@ -23,13 +23,13 @@ const productModel = connection.define('products', {
         type: sequelize.FLOAT,
         allowNull: false
     },
-    img_url: {
-        field: 'img_url',
+    imgUrl: {
+        field: 'imgUrl',
         type: sequelize.STRING,
         allowNull: false
     },
-    is_disable: {
-        field: 'is_disable',
+    isDisable: {
+        field: 'isDisable',
         type: sequelize.STRING,
         allowNull: true
     }

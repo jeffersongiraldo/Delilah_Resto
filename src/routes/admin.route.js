@@ -4,8 +4,11 @@ const productModel = require('../models/product.model');
 const orderModel = require('../models/order.model');
 const billModel = require('../models/bill.model');
 
+//Functions of the admin route
+const adminFunctions = require('../utils/admin.functions')
+
 //Middleware para el endpoint POST admin/products
-const validateProduct = require('../middlewares/validateProduct');
+const validateProduct = require('../middlewares/validateProducts');
 
 
 router
@@ -15,7 +18,6 @@ router
             .then(users => {
                 if (users) {
                     const dataUsers = users.map(user => {
-                        console.log(`This is the conditional ${user.password !== undefined}`)
                         if(user.password !== undefined) {
                             user.password = undefined;
                             user.adminCode = undefined;
@@ -106,7 +108,6 @@ router
             where: {product_id: id}
         })
             .then(async result => {
-                console.log(result)
                 if(result == 1) {
                     const productUpdated = await productModel.findByPk(id);
                     return res.status(202).json({msg: `The product was updated`, data: productUpdated})
@@ -163,66 +164,48 @@ router
             })
     })
 
-    .put('/orders/:id', (req, res) => {
+    .put('/orders/:id', async(req, res) => {
         let {id} = req.params;
-        console.log(req.body.status_order, id)
-        
-        let newStatusOrder = req.body.status_order.toLowerCase();
+        let newStatusOrder = req.body.statusOrder
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
-        if(!req.body.hasOwnProperty('status_order')) return res.status(400).json({error: true, msg: 'It is only possible to update the status of an order'})
-        const statusOrder = ['new', 'confirmed', 'in process', 'sending', 'delivered', 'canceled']
-        console.log(newStatusOrder, statusOrder.includes(newStatusOrder))
-        if(!statusOrder.includes(newStatusOrder)) {
+        if(!req.body.hasOwnProperty('statusOrder')) return res.status(400).json({error: true, msg: 'It is only possible to update the status of an order'})
+        const statusOrderOptions = ['New', 'Confirmed', 'In Process', 'Sending', 'Delivered', 'Canceled']
+        if(!statusOrderOptions.includes(newStatusOrder)) {
             return res.status(400).json({error: true, msg: 'You must put a correct status order to update'})
         } 
         const statusOrderUpdate = {
-            status_order: newStatusOrder
+            statusOrder: newStatusOrder
         };
-        orderModel.update(statusOrderUpdate, {
-            where: {order_id: id}
-        })
-            .then(async result => {
-                if(result == 1) {
-                    const orderUpdated = await orderModel.findByPk(id);
-                    return res.status(202).json({msg: `The order was updated`, data: orderUpdated})
-                }
-                return res.status(400).json({error: true, msg: `There is an error with the order_id ${id}`})
+
+        await orderModel.findByPk(id)
+            .then(async order => {
+                if(order.statusOrder === newStatusOrder) return res.status(401).json({error: true, msg: `The order have the same status ${newStatusOrder}. Try with other one`})
+                await orderModel.update(statusOrderUpdate, {
+                    where: {order_id: id}
+                })
+                    .then(async result => {
+                        const orderUpdated = await orderModel.findByPk(id)
+                        return res.status(202).json({msg: `The order was updated`, data: orderUpdated});
+                    })
+                    .catch(err => {
+                        return res.status(400).json({error: true, msg: `There is an error with the update ${err}`})
+                    })
             })
             .catch(err => {
-                return Error({error: true, msg: `There is an error with the update ${err}`})
+                return res.status(400).json({error: true, msg: `There is an error with the order_id ${id}`, err: err})
             })
     })
 
+    // Endpoint GET /admin
     .get('/', async(req, res) => {
-        const numUsersAvailable = await userModel.findAll({where: {isDisable: 'false'}})
-                            .then(result => {
-                                return result.length
-                            })
-                            .catch(err => {
-                                return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
-                            })
-        const numOrders = await orderModel.findAll()
-                            .then(result => {
-                                return result.length
-                            })
-                            .catch(err => {
-                                return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
-                            })
-        const numProductsAvailable = await productModel.findAll({where: {isDisable: 'false'}})
-                                        .then(result => {
-                                            return result.length;
-                                        })
-                                        .catch(err => {
-                                            return res.status(400).json({error: true, msg: `There is an error with the request ${err}`})
-                                        })
-
+        const data = await adminFunctions.resumeData();
+        if(data == false) return res.status(400).json({error: true, msg: `There is an error with the request`})
         const allData = {
-            users: numUsersAvailable,
-            products: numProductsAvailable,
-            orders: numOrders
+            users: data[0],
+            products: data[1],
+            orders: data[2]
         }
-
-        return res.status(202).json({msg: 'This is the data of the users, products and orders until now', info: allData})
+        return res.status(202).json({msg: 'This is the data of the users, products and orders until now', data: allData})
     })
 
 module.exports = router;

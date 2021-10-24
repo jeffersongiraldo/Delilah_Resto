@@ -166,10 +166,10 @@ router
 
     .put('/orders/:id', async(req, res) => {
         let {id} = req.params;
-        let newStatusOrder = req.body.statusOrder
+        let newStatusOrder = req.body.statusOrder.toLowerCase();
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
         if(!req.body.hasOwnProperty('statusOrder')) return res.status(400).json({error: true, msg: 'It is only possible to update the status of an order'})
-        const statusOrderOptions = ['New', 'Confirmed', 'In Process', 'Sending', 'Delivered', 'Canceled']
+        const statusOrderOptions = ['new', 'confirmed', 'in process', 'sending', 'delivered', 'canceled']
         if(!statusOrderOptions.includes(newStatusOrder)) {
             return res.status(400).json({error: true, msg: 'You must put a correct status order to update'})
         } 

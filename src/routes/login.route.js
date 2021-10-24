@@ -8,12 +8,14 @@ const userModel = require('../models/user.model');
 // Connection to the DataBase
 const connection = require('../database/connection');
 
+// Import the function of Login
+const findUser = require('../utils/login.function');
 
 // Login
 const login = router.post('/', async(req, res) => {
-    const userFound = await userModel.findOne({
-        where: {username: req.body.username}
-    })
+    
+    const userFound = await findUser(req.body);
+    
 
     //Creacion del Token
     const token = jwt.sign({

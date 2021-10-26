@@ -10,8 +10,12 @@ const connection = require('../database/connection');
 
 // Register
 const register = router.post('/', async(req, res) => {
+
+    //Encrypting the password of the user
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(req.body.password, salt)
+
+    //If the user has the admin role, the adminCode is encrypted. 
     const adminCode = (req.body.adminCode !==  undefined) 
                         ? await bcrypt.hash(req.body.adminCode, salt)
                         : null

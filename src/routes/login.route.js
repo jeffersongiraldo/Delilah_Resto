@@ -17,7 +17,7 @@ const login = router.post('/', async(req, res) => {
     const userFound = await findUser(req.body);
     
 
-    //Creacion del Token
+    //Create of the Token
     const token = jwt.sign({
         username: userFound.username,
         user_id: userFound.user_id,
@@ -25,10 +25,11 @@ const login = router.post('/', async(req, res) => {
         adminCode: userFound.adminCode
     }, config.tokenSecret)
 
-    //Ingreso valido
+    //Set the token to the header
     headers = {
         'Authorization': token
     }
+    
     res.header(headers).json({
         error:null,
         data: token,

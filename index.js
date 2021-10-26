@@ -28,11 +28,11 @@ const myOrders = require('./src/routes/myOrders.route');
 const admin = require('./src/routes/admin.route');
 
 // Paths
-app.use('/DelilahResto/account/register', validateRegister, register);
+app.use('/DelilahResto/register', validateRegister, register);
 app.use('/DelilahResto/account/login', validateLogin, login);
-app.use('/DelilahResto', authToken, account);
-app.use('/DelilahResto', authToken, newOrder);
-app.use('/DelilahResto', authToken, products);
+app.use('/DelilahResto/account/myinfo', account);
+app.use('/DelilahResto/account/newOrder', authToken, newOrder);
+app.use('/DelilahResto/products', authToken, products);
 app.use('/DelilahResto/account/myOrders', myOrders)
 app.use('/DelilahResto/admin', authAdmin, admin);
 

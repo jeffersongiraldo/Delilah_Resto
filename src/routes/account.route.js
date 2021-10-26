@@ -4,22 +4,22 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
 
 router
-    .get('/myInfo', async(req, res) => {
+    .get('/', async(req, res) => {
         const token = req.headers.authorization;
         const tokenDecoded = jwt_decode(token);
         await userModel.findOne({
             where: {user_id: parseInt(tokenDecoded.user_id)}
         })
-        .then(userFound => {
-            if(userFound) return res.status(202).json({ msg: "Accepted", user_id: userFound.user_id, username: userFound.username, fullname: userFound.fullname, email: userFound.email, deliveryAddress: userFound.deliveryAddress,cellphone: userFound.cellphone})
-            res.status(404).json({error: true, msg: "It was not possible to found the info of the user"});
-        })
-        .catch(err => {
-            res.status(400).json({error: true, msg: `ERROR in the process of founding the user account ${err}`})
-        })
+            .then(userFound => {
+                if(userFound) return res.status(202).json({ msg: "Accepted", user_id: userFound.user_id, username: userFound.username, fullname: userFound.fullname, email: userFound.email, deliveryAddress: userFound.deliveryAddress,cellphone: userFound.cellphone})
+                return res.status(404).json({error: true, msg: "It was not possible to found the info of the user"});
+            })
+            .catch(err => {
+                return res.status(400).json({error: true, msg: `ERROR in the process of founding the user account ${err}`})
+            })
     })
 
-    .put('/myInfo', async(req, res) => {
+    .put('/', async(req, res) => {
         const newInfo = req.body;
         const token = req.headers.authorization;
         const tokenDecoded = jwt_decode(token);

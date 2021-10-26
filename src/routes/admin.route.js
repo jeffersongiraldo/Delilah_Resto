@@ -112,7 +112,7 @@ router
                     const productUpdated = await productModel.findByPk(id);
                     return res.status(202).json({msg: `The product was updated`, data: productUpdated})
                 }
-                return res.status(400).json({error: true, msg: ` Not Found the product with id ${id}`})
+                return res.status(400).json({error: true, msg: `Error with the product id or with the attribute to update`})
             })
             .catch(err => {
                 res.status(400).json({error: true, msg: `There is an error with the update ${err}`})
@@ -132,14 +132,13 @@ router
                                 where: {product_id: id}
                             })
                                 .then(result => {
-                                    console.log(result)
                                     if(result == 1) {
-                                        return res.status(202).json({msg: `The product was disable`, data: {product: productUpdated.product_name, disable}})
+                                        return res.status(202).json({msg: `The product ${id} has been disabled`})
                                     }    
-                                    return res.status(400).json({error: true, msg: `Error in disable of the product`})
+                                    return res.status(400).json({error: true, msg: `Error in disabled of the product`})
                                 })
                                 .catch(err => {
-                                    return res.status(400).json({error: true, msg: `There is an error updating of disable ${err}`})
+                                    return res.status(400).json({error: true, msg: `There is an error updating the status of disabled of the product ${err}`})
                                 })
                         }
                         product.destroy()

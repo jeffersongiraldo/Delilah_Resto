@@ -2,7 +2,7 @@ const router = require('express').Router();
 const productModel = require('../models/product.model');
 
 router
-    .get('/products', (req, res) => {
+    .get('/', (req, res) => {
         productModel.findAll({where: {isDisable: 'false'}})
             .then((products) => {
                 if (products) return res.status(202).json({msg: 'Accepted', data: products})
@@ -10,7 +10,7 @@ router
             })
     })
 
-    .get('/products/:id', (req, res) => {
+    .get('/:id', (req, res) => {
         let {id} = req.params;
         if(isNaN(id)) return res.status(400).json({error: true, msg:'Id should be a number'});
         productModel.findByPk(id)

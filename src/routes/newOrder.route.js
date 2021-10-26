@@ -2,7 +2,10 @@ const router = require('express').Router();
 const jwt_decode = require('jwt-decode');
 const createOrder = require('../utils/order.functions');
 
-const newOrder = router.post('/newOrder', async(req, res) => {
+// Validador de productos id en la orden
+const validateProductsId = require('../middlewares/validateOrder');
+
+const newOrder = router.post('/', validateProductsId, async(req, res) => {
     const order = req.body;
     const user_id = jwt_decode(req.headers.authorization).user_id;
    

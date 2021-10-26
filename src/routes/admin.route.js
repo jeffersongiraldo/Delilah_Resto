@@ -17,6 +17,8 @@ router
         userModel.findAll()
             .then(users => {
                 if (users) {
+
+                    //Create a new array with the users data to show it without their password and the adminCode
                     const dataUsers = users.map(user => {
                         if(user.password !== undefined) {
                             user.password = undefined;
@@ -26,6 +28,7 @@ router
                         
                         return user;
                     })
+
                     return res.status(200).json({msg: 'Accepted', data: dataUsers})
                 }
                 res.status(404).json({msg: 'Users Not Found'})
@@ -34,10 +37,15 @@ router
 
     .get('/users/:id', (req, res) => {
         let {id} = req.params;
+
+        //Validate if the user Id is a number  
         if(isNaN(id)) return res.status(400).json({error: true, msg:'The ID should be a number'});
+        
         userModel.findByPk(id)
             .then((user) => {
                 if (!user || user == undefined || user == null) return res.status(404).json({error: true, msg: `User identify with id ${id} Not Found`})
+                
+                //Omit the private information of the user before to send it 
                 const userData = user;
                 if(userData.password !== undefined) {
                     userData.password = undefined;
@@ -49,7 +57,10 @@ router
 
     .delete('/users/:id', (req, res) => {
         let {id} = req.params;
+
+        //Validate if the user Id is a number 
         if(isNaN(id)) return res.status(400).json({error: true, msg:'Id should be a number'});
+        
         userModel.findByPk(id)
             .then(user => {
                 user.destroy()    
@@ -65,7 +76,6 @@ router
 
     
     //Endpoints de la ruta admin/products
-
     .get('/products', (req, res) => {
         productModel.findAll()
             .then(products => {
@@ -78,7 +88,10 @@ router
 
     .get('/products/:id', (req, res) => {
         let {id} = req.params;
+
+        //Validate if the product Id is a number 
         if (isNaN(id)) return res.status(400).json({error: true, msg:'Id should be a number'});
+        
         productModel.findByPk(id)
             .then(product => {
                 if(!product) return res.status(404).json({error: true, msg: `Product with id ${id} not found`})
@@ -102,7 +115,10 @@ router
 
     .put('/products/:id', async (req, res) => {
         let {id} = req.params;
+
+        //Validate if the product Id is a number 
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
+        
         const newInfoProduct = req.body;
         await productModel.update(newInfoProduct, {
             where: {product_id: id}
@@ -121,11 +137,18 @@ router
 
     .delete('/products/:id', (req, res) => {
         let {id} = req.params;
+
+        //Validate if the product Id is a number 
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
+        
         productModel.findByPk(id)
             .then(product => {
+
+                //Validate if the product to delete is in any order
                 orderDetailModel.findAll({ where: {product_id: id}})
                     .then(async result => {
+
+                        //Condition: If the product is in any order can't delete. So, this product would be disable
                         if(result.length > 0) {
                             disable = {isDisable: "true"}
                             await productModel.update(disable, {
@@ -141,6 +164,8 @@ router
                                     return res.status(400).json({error: true, msg: `There is an error updating the status of disabled of the product ${err}`})
                                 })
                         }
+
+                        //If the product is NOT in any order, it would be delete of the database.
                         product.destroy()
                             .then(() => {
                                 return res.status(202).json({msg: `The product with id ${id} has been deleted successfully!`})
@@ -175,6 +200,8 @@ router
 
     .get('/orders/:id', (req, res) => {
         let {id} = req.params;
+
+        //Validate if the order Id is a number 
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string or a symbol'})
 
         orderModel.findByPk(id)
@@ -189,20 +216,33 @@ router
 
     .put('/orders/:id', async(req, res) => {
         let {id} = req.params;
-        let newStatusOrder = req.body.statusOrder.toLowerCase();
+
+        //Validate if the product Id is a number 
         if(isNaN(id)) return res.status(400).json({error: true, msg: 'The id must be a number, not a string'})
+
+        //The admin just can update the property statusOrder of the order
         if(!req.body.hasOwnProperty('statusOrder')) return res.status(400).json({error: true, msg: 'It is only possible to update the status of an order'})
-        const statusOrderOptions = ['new', 'confirmed', 'in process', 'sending', 'delivered', 'canceled']
+        
+        //Transfrom the string in the body to lowercase
+        let newStatusOrder = req.body.statusOrder.toLowerCase();
+        
+        const statusOrderOptions = ['new', 'confirmed', 'in process', 'sending', 'delivered', 'canceled'];
+
+        //Status order Validation
         if(!statusOrderOptions.includes(newStatusOrder)) {
             return res.status(400).json({error: true, msg: 'You must put a correct status order to update'})
         } 
+
         const statusOrderUpdate = {
             statusOrder: newStatusOrder
         };
 
         await orderModel.findByPk(id)
             .then(async order => {
+
+                //Validate that the status order to update wouldnt be the same than the actual status
                 if(order.statusOrder === newStatusOrder) return res.status(401).json({error: true, msg: `The order have the same status ${newStatusOrder}. Try with other one`})
+                
                 await orderModel.update(statusOrderUpdate, {
                     where: {order_id: id}
                 })
@@ -221,7 +261,10 @@ router
 
     // Endpoint GET /admin
     .get('/', async(req, res) => {
+
+        //Function to get the number of active users, available products and all orders
         const data = await adminFunctions.resumeData();
+        
         if(data == false) return res.status(400).json({error: true, msg: `There is an error with the request`})
         const allData = {
             users: data[0],

@@ -4,8 +4,11 @@ const config = require('../config/config');
 
 const authAdmin = (req, res, next) => {
     const token = req.headers.authorization;
-    console.log(token)
+
+    // Validation that exists a token 
     if (req.headers.authorization == undefined) return res.status(401).json({error: true, msg: 'Please you have login!'})
+    
+    // Token validation to login like an administrator
     jwt.verify(token, config.tokenSecret, (err, decoded) => {
         if (err) return res.status(401).json({error: true, msg: `Unauthorized`})
         if (decoded.isAdmin == 'true' && bcrypt.compare(config.adminCode, decoded.adminCode)) {

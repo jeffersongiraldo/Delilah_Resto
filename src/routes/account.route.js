@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
 
 router
+    //Endpoints for the account/myInfo route
     .get('/', async(req, res) => {
         const token = req.headers.authorization;
         const tokenDecoded = jwt_decode(token);
@@ -28,8 +29,9 @@ router
                 where: {user_id: user_id}
             })
             .then((result) => {
-                console.log(result, user_id, newInfo)
                 if (result == 1) {
+
+                    //Validate if the user go to update the password to encrypted before to send to the database
                     if (newInfo.hasOwnProperty("password")) {
                         async function updatePassword(obj) {
                             const salt = await bcrypt.genSalt(10);
@@ -45,6 +47,7 @@ router
                         const passwrodUpdated = updatePassword(newInfo)
                         return passwrodUpdated;
                     }
+                    
                     res.status(202).json({msg: 'Info was updated successfully!', data: newInfo})
                 }
                 res.status(400).json({error: true, msg:`Can not update the info of the account`})

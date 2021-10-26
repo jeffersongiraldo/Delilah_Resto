@@ -5,6 +5,7 @@ const orderDetailModel = require('../models/orderDetail.model');
 const orderModel = require('../models/order.model');
 const billModel = require('../models/bill.model');
 
+//Function to get each price of the products selected by the user
 const getPriceProducts = async (array) => {
     const newArray = [];
     for (let i=0; i<array.length; i++) {
@@ -20,6 +21,7 @@ const getPriceProducts = async (array) => {
     }
 }
 
+//Function to create and insert the order Details for each product of the order
 const insertOrderDetail = async (orderId, array) => {
     const register = await array.map((el) => {
         let product_id = el.product_id;
@@ -32,13 +34,13 @@ const insertOrderDetail = async (orderId, array) => {
             subtotal,
             order_id: orderId
         }
-        console.log(created)
         return created;
     })
     const insertDetail = await orderDetailModel.bulkCreate(register);
     return(register);
 }
 
+//Function to create the bill of the order
 const createBill = async (order) => {
     const newBill = {
         date: order.date,
@@ -51,15 +53,10 @@ const createBill = async (order) => {
     return billCreated;
 }
 
+// Function to update the order in the property bill_id
 const updateBillId = async(order, bill) => {
     const item = {
-        order_id: order.order_id,
-        date: order.date,
-        total: order.total,
-        statusOrder: order.statusOrder,
-        user_id: order.user_id,
-        bill_id: bill,
-        paymentMethod: order.paymentMethod
+        bill_id: bill
     }
     await orderModel.update(item, { where: {order_id: order.order_id}})
 }
@@ -67,6 +64,8 @@ const updateBillId = async(order, bill) => {
 const createOrder = async (newOrder, user_id) => {
     try {
         const arrayOrderWithPrices = await getPriceProducts(newOrder.products)
+        
+        //Get the subtotal per product of the order
         const subtotalPerProduct = [];
         for (let i=0; i<arrayOrderWithPrices.length; i++) {
             let quantity = arrayOrderWithPrices[i].quantity;
@@ -74,15 +73,22 @@ const createOrder = async (newOrder, user_id) => {
             let subtotalProduct = quantity * priceProduct;
             subtotalPerProduct.push(subtotalProduct);
         }
+
+        //Get the total of the order
         let totalOrder = 0;
         subtotalPerProduct.forEach(price => {totalOrder += price} )
+        
+        //Get the date of the moment to create the order
         const orderDate = moment.format('YYYY-MM-DD HH:mm:ss');
+
+        //Format to send the order to the database
         const orderFormat = {
             date: orderDate,
             total: totalOrder,
             user_id: parseInt(user_id),
             paymentMethod: newOrder.paymentMethod
         }
+        
         try {
             const orderCreated = await orderModel.create(orderFormat)
             const idNewOrder = orderCreated.order_id;

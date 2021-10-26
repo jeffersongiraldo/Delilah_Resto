@@ -48,7 +48,7 @@ https://github.com/jeffersongiraldo/Delilah_Resto
 npm i
 ```
 #### Configuración de base de datos:
-1. Abrir XAMPP y configurar el puerto en el deseado. Ver más abajo 'configurando el server'.
+1. Abrir XAMPP y configurar el puerto en el deseado.
 2. Inicializar los servicios de Apache y MySQL.
 3. Abrir el panel de control del servicio MySQL.
 4. Crear una nueva Base de datos `delilah_resto_db`.
@@ -63,30 +63,35 @@ En consola situarse dentro de la carpeta del proyecto y correr el comando:
 node index.js
 ```
 
-#### Aclaración para pruebas
+## Aclaración para pruebas
 
 **Usuario con rol de Administrador**
 Para crearlo, se deben agregar estos atributos y valores al objeto JSON, además de los otros datos que corresponden a la info personal del usuario:
+ ```   
     {
         "isAdmin": "true",
         "adminCode": "delilahLoMejor"
     }
+```
 
 **Login en la plataforma**
 Hay dos formas de logearse en la app, usando el usuario o email además de la contraseña. Aquí un ejemplo del JSON que se debe enviar:
+```    
     {
     "username": "JBalvin",
     "password": "noaladepre"
     }    
-
+```
+```
     {
     "email": "elcrackdemedallo@email.com",
     "password": "noaladepre"
     }
+```
 
 **Crear una Orden**
 - Para realizar una orden se debe enviar un JSON especificando el método de pago y el Array de productos a ordenar con su Id y cantidad deseada. Por ejemplo:
-
+```
     {
     "products": [
         {
@@ -104,9 +109,11 @@ Hay dos formas de logearse en la app, usando el usuario o email además de la co
     ], 
     "paymentMethod": "credit card"
     }
+```
 
 - Dentro de las opciones del método de pago están las siguientes:
 paymentMethod: "cash", "credit card", "transfer", "debit card".
+
 
 **Opciones de Status de una Orden**
 Tener en cuenta que úniamente el usuario que tenga rol de administrador puede cambiar el status de una orden. Dentro de las opciones que hay están las siguientes: 

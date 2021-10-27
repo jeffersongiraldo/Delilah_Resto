@@ -1,0 +1,1107 @@
+---
+openapi: 3.0.0
+info:
+  title: Delilah Resto Api
+  description: It's a project where the users will can sign in, log in, view the available dishes and place their orders. Also, this API  will allow the administrator to create new products, update the products already created, visualize the registered users with their orders and finally, the admin will can update the status of the orders.
+  contact:
+    name: Delilah Resto
+    email: delilah_resto@gmail.com
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/anamazari/delilah_resto/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/jeffersongiraldo/DelilahRestoApi/1.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: Account
+  description: Information about the user and his/her favourite products
+- name: Register
+  description: Let to register the users
+- name: Products
+  description: Let to see the available products
+- name: Admin
+  description: the manager of the restaurant can visualize everything about his/her users and orders. Also, he/she can create, update and delete the products
+paths:
+  /register:
+    post:
+      tags:
+      - Register
+      summary: create a new user in Delilah Resto
+      description: Allow to send the form to register in the web page.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        "200":
+          description: Great! You are a new user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Error validating input data
+        "409":
+          description: Username already exists, please pick anotherone
+      security:
+      - bearerAuth: []
+  /products:
+    get:
+      tags:
+      - Products
+      summary: This one allows to visualize all the available products to the users
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listProducts'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "404":
+          description: The products were not found
+  /products/{productId}:
+    get:
+      tags:
+      - Products
+      summary: Let to visualize a specific product.
+      operationId: getProductId
+      parameters:
+      - name: productId
+        in: path
+        description: The ID of the product that needs to be fetched.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        "400":
+          description: Error validating the Id of the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Peth rejected. The product was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+  /account/login:
+    post:
+      tags:
+      - Account
+      summary: send the credentials to login in Delilah Resto
+      description: Allow to send the form to login in the web page. The user can login with the username or email, and the password.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginBody'
+        required: true
+      responses:
+        "200":
+          description: Welcome to Delilah Resto!
+        "402":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /account/myinfo:
+    get:
+      tags:
+      - Account
+      summary: Allow to visualize the profile of the user.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: This is your profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Error of the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Account
+      summary: Allow to update personal info.
+      description: This method let to update the information of the user.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        "200":
+          description: The information has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "400":
+          description: Operation rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /account/newOrder:
+    post:
+      tags:
+      - Account
+      summary: Allow to make an order
+      description: This method allow to the user make his/her order
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/orderSend'
+      responses:
+        "200":
+          description: correct operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderCreated'
+        "400":
+          description: Operation rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /account/myOrders:
+    get:
+      tags:
+      - Account
+      summary: Allow to visualize all orders of the user.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ordersCreated'
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "403":
+          description: Error Authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /account/myOrders/{orderId}:
+    get:
+      tags:
+      - Account
+      summary: Let to visualize the specific order of the user.
+      operationId: getProductById
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      - name: orderId
+        in: path
+        description: The ID of the product that needs to be fetched.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderCreated'
+        "400":
+          description: Error validating the Id of the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Peth rejected. The Order was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+  /admin:
+    get:
+      tags:
+      - Admin
+      summary: Allow to visualize the number of active users, available products and all the orders.
+      description: This method list the resume data of the number of users, products and orders.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+      security:
+      - bearerAuth: []
+  /admin/users:
+    get:
+      tags:
+      - Admin
+      summary: This path let to get list of users just by the admin.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listUsers'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+  /admin/users/{userId}:
+    get:
+      tags:
+      - Admin
+      summary: Let to visualize the specific order of the user.
+      operationId: getUserById
+      parameters:
+      - name: userId
+        in: path
+        description: The ID of the user that needs to be fetched.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Peth rejected. The user was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Admin
+      summary: Delete an user
+      parameters:
+      - name: userId
+        in: path
+        description: Id del pedido a eliminar
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 2
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: The user was deleted successfully!
+          content:
+            text/plain:
+              example: The user with Id 2 was deleted successfully
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Not Found the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+  /admin/products:
+    get:
+      tags:
+      - Admin
+      summary: This one allows to visualize all the products to the admin
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listProducts'
+        "401":
+          $ref: '#/components/schemas/Unauthorized'
+        "404":
+          description: The products were not found
+    post:
+      tags:
+      - Admin
+      summary: Allow to the admin create a new product
+      description: This method allow to the admin create a new product in the restaurant.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+      responses:
+        "200":
+          description: New product has been created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        "400":
+          description: Operation rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /admin/products/{productId}:
+    get:
+      tags:
+      - Admin
+      summary: Let to visualize a specific product.
+      operationId: getProduct
+      parameters:
+      - name: productId
+        in: path
+        description: The ID of the product that needs to be fetched.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Not Found the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Admin
+      summary: Allow to update the product identified with Id.
+      description: This method let to update an available product in the restaurant
+      operationId: editProduct
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                price: 20000
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Not Found the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Admin
+      summary: Delete a product
+      parameters:
+      - name: productId
+        in: path
+        description: Id of the product to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 2
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: The product was deleted successfully!
+          content:
+            text/plain:
+              example: The user with Id 2 was deleted successfully
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Not Found the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+  /admin/orders:
+    get:
+      tags:
+      - Admin
+      summary: Allow to visualize all orders made by all users.
+      parameters:
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      - name: limit
+        in: query
+        description: Number of results to get
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+        example: 20
+      - name: skip
+        in: query
+        description: Number of results since to begin
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+        example: 5
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ordersCreated'
+        "400":
+          description: Error in the process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Not Found the id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+      security:
+      - bearerAuth: []
+  /admin/orders/{orderId}:
+    get:
+      tags:
+      - Admin
+      summary: Let to visualize a specific order.
+      operationId: getOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: The ID of the order that needs to be fetched.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: bearerAuth
+        in: header
+        description: Authentication Token with rol Administrator
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/tokenAuth'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderCreated'
+        "400":
+          description: Error! Unauthorizated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: Peth rejected. The order was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Admin
+      summary: Allow to update the state of the order identified with Id.
+      description: This method let the admin to update just the status of the order
+      operationId: editOrder
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/orders_orderId_body'
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderCreated'
+        "400":
+          description: The id of the order is Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotAdmin'
+        "404":
+          description: The id of the order is Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    user:
+      required:
+      - cellphone
+      - deliveryAddres
+      - email
+      - fullname
+      - password
+      - username
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+        fullname:
+          type: string
+        cellphone:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        isAdmin:
+          type: boolean
+          enum:
+          - true
+          - false
+        adminCode:
+          type: string
+          example: delilahLoMejor
+        isDisabled:
+          type: boolean
+          example: false
+    listUsers:
+      type: array
+      items:
+        $ref: '#/components/schemas/user'
+    UserInfo:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+        fullname:
+          type: string
+        cellphone:
+          type: string
+        email:
+          type: string
+          format: email
+        isAdmin:
+          type: boolean
+          enum:
+          - true
+          - false
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código de error
+        status:
+          type: integer
+          description: httpstatus
+          format: int32
+        type:
+          type: string
+          description: Tipo de error
+        message:
+          type: string
+          description: Mensaje de error
+    product:
+      required:
+      - description
+      - imgUrl
+      - price
+      - productName
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        productName:
+          type: string
+          example: Bandeja Paisa
+        description:
+          type: string
+          example: Includes beans, white rice, fried pork rinds, ground beef, chorizo, fried egg, ripe banana, avocado and arepa.
+        price:
+          type: integer
+          example: 25000
+        img_url:
+          type: string
+          example: https://2.bp.blogspot.com/-BlluQRpU_VM/WkrdV6EP-BI/AAAAAAAAFC0/KmwzYCsb5Nwr8bEaiwQcye_Lb2pVgLowgCLcBGAs/s1600/bandejas.png)
+        is_disabled:
+          type: boolean
+          enum:
+          - true
+          - false
+    listProducts:
+      type: array
+      items:
+        $ref: '#/components/schemas/product'
+    orderSend:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+          example: Confirmed
+          enum:
+          - new
+          - confirmed
+          - in process
+          - sending
+          - delivered
+          - canceled
+        products:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/orderSend_products'
+    orderCreated:
+      required:
+      - date
+      - paymentMethod
+      - total
+      - user_id
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+        total:
+          type: integer
+          example: 52000
+        statusOrder:
+          type: string
+          example: Confirmed
+          enum:
+          - new
+          - confirmed
+          - in process
+          - sending
+          - delivered
+          - canceled
+        user_id:
+          type: integer
+          example: 4
+        paymentMethod:
+          type: string
+          example: transfer
+          enum:
+          - cash
+          - debit card
+          - credit card
+          - transfer
+        bill_id:
+          type: integer
+          example: 39
+    ordersCreated:
+      type: array
+      items:
+        $ref: '#/components/schemas/orderCreated'
+    Unauthorized:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unauthorized - Not an Admin.
+    loginBody:
+      required:
+      - password
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          example: JBalvin
+        password:
+          type: string
+          format: password
+    tokenAuth:
+      type: string
+      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibm9tYnJlIjoiTmF0YWxpYSIsIm5vbWJyZVVzdWFyaW8iOiJuYXRhbGlhY2FtZXJvY0BnbWFpbC5jb20iLCJwYXNzd29yZCI6IktKVUJIWUFTJiYlVFVHWUdZSiIsInJvbCI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE1OTA5NTkzMjF9.wum_e9qc4qUtbhvFHEVrnL8WE69sHcMb9dRuA8iGyDM
+    inline_response_200:
+      type: object
+      properties:
+        data:
+          minItems: 3
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_200_data'
+    orders_orderId_body:
+      type: object
+      properties:
+        statusOrder:
+          type: string
+          description: State of the order
+          enum:
+          - new
+          - confirmed
+          - in process
+          - sending
+          - delivered
+          - canceled
+      example:
+        statusOrder: delivered
+    orderSend_products:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 3
+    inline_response_200_data:
+      type: object
+      properties:
+        users:
+          type: integer
+          example: 8
+        products:
+          type: integer
+          example: 6
+        orders:
+          type: integer
+          example: 15
+  responses:
+    Unauthorized:
+      description: You are not authorized to visit this section
+    Disabled:
+      description: Invalid request, user account is disabled
+    NotAdmin:
+      description: Operation forbidden, not an admin
+    NotFound:
+      description: The specified resource was not found
+    Default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    limitParam:
+      name: limit
+      in: query
+      description: Number of results to get
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+      example: 20
+    skipParam:
+      name: skip
+      in: query
+      description: Number of results since to begin
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+      example: 5
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

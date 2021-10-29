@@ -259,6 +259,26 @@ router
             })
     })
 
+    .delete('/orders/:id', (req, res) => {
+        let {id} = req.params;
+
+        //Validate if the order Id is a number 
+        if(isNaN(id)) return res.status(400).json({error: true, msg:'Id should be a number'});
+        
+        orderModel.findByPk(id)
+            .then(user => {
+                user.destroy()    
+                    .then(() => res.status(200).json({msg: `The order with id ${id} has been deleted successfully`}))
+                    .catch(err => {
+                        res.status(400).json({error: true, msg: `There was a problem in the process of deleting ${err}`})
+                    })
+            })
+            .catch(err => {
+                res.status(400).json({error: true, msg: `The order with id ${id} Not Found`})
+            })
+    })
+
+    
     // Endpoint GET /admin
     .get('/', async(req, res) => {
 

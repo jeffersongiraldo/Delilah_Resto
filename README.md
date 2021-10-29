@@ -62,6 +62,10 @@ En consola situarse dentro de la carpeta del proyecto y correr el comando:
 ```
 node index.js
 ```
+O también puede ejecutar el programa con el siguiente comando:
+```
+npm start
+```
 
 ## Aclaración para pruebas
 
@@ -120,7 +124,7 @@ Tener en cuenta que úniamente el usuario que tenga rol de administrador puede c
     - statusOrden: "new", "confirmed", "in process", "sending", "delivered", "canceled".
 
 
-### Autor:
+### Autores:
 - **Ana Maria Zapata**
 - **Jefferson Giraldo**
 ---
